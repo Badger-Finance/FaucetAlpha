@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "moralis": "^0.0.21"
+  }
+}
