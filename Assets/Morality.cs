@@ -12,13 +12,14 @@ public class Morality : MonoBehaviour
     private static extern void Mlty_Initialize(string server, string project);
 
     [DllImport("__Internal")]
-    private static extern void Mlty_Authenticate(int requestId, Action<int,bool> callback);
+    private static extern void Mlty_Authenticate(int requestId, LoginCSharpCallback callback);
 
-    public string server;
-    public string project;
+    [DllImport("__Internal")]
+    private static extern void Mlty_WalletAddress(int requestId, WalletAddressCSharpCallback callback);
     
     // This is the callback, whose pointer we'll send to javascript and is called by emscripten's Runtime.dynCall.
-    public delegate void LoginCSharpCallback(int requestID, bool outcome);
+    public delegate void LoginCSharpCallback(int requestID, int outcome);    
+    public delegate void WalletAddressCSharpCallback(int requestID, string outcome);
 
     /// <summary>
     /// Everytime a request is issued, give it the current id and increment this for next request.
@@ -30,39 +31,69 @@ public class Morality : MonoBehaviour
     /// </summary>
     static Dictionary<int, object> callbacksBook = new Dictionary<int, object>();
 
+    public static Morality Instance = null;
 
-
+    public string server;
+    public string project;
+    public bool isInitialized = false;
+    public bool isAuthenticated = false;
+    
     [MonoPInvokeCallback(typeof(LoginCSharpCallback))]
-    private static void GlobalCallback(int requestID, bool outcome)
+    private static void GlobalCallback(int requestID, int outcome)
     {
         if(callbacksBook.TryGetValue(requestID, out object callback))
         {
-            (callback as Action<bool>)?.Invoke(outcome);
+            (callback as Action<int>)?.Invoke(outcome);
+        }
+        // Remove this request from the tracker as it is done.
+        callbacksBook.Remove(requestID);
+    }
+
+    [MonoPInvokeCallback(typeof(WalletAddressCSharpCallback))]
+    private static void GlobalCallback(int requestID, string outcome)
+    {
+        if(callbacksBook.TryGetValue(requestID, out object callback))
+        {
+            (callback as Action<string>)?.Invoke(outcome);
         }
         // Remove this request from the tracker as it is done.
         callbacksBook.Remove(requestID);
     }
     
-    void Start()
+    private void Awake()
     {
-        // Example external code:
-        this.Initialize(server, project);
-        this.Authenticate((outcome)=>
+        if (Instance == null)
         {
-            Debug.Log("Login " + (outcome ? "Successful" : "Failed"));
-        });
+            Instance = this;
+        }
+        else
+        {
+            DestroyImmediate(this);
+        }
     }
-
-    public void Initialize(string server, string project)
+    
+    public void Initialize()
     {
         Mlty_Initialize(server, project);
+        isInitialized = true;
     }
 
-    public void Authenticate(Action<bool> callback)
+    public void Authenticate(Action<int> callback = null)
+    {
+        Mlty_Authenticate(NewRequest(callback), GlobalCallback);
+        isAuthenticated = true;
+    }
+
+    public void GetWalletAddress(Action<string> callback)
+    {
+        Mlty_WalletAddress(NewRequest(callback), GlobalCallback);
+    }
+
+    private int NewRequest(object callback)
     {
         int requestID = requestIDIncrementer++;
         callbacksBook.Add(requestID, callback);
 
-        Mlty_Authenticate(requestID, GlobalCallback);
+        return requestID;
     }
 }

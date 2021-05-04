@@ -12,6 +12,16 @@ var moralityGlobal =
              // the link and an error.
              Runtime.dynCall('vii', callback, [requestID, outcome]);
          },
+
+        // Notifies C# that the login was successful.
+        NotifyCSharp_GetAddressOutcome : function(requestID, outcome, callback)
+        {
+            // Calls a C# function using its pointer 'callback',
+            // 'v' means it is a void function, the count of 'i's if the count of 
+            // arguments this function accepts in our case 3 arguments, request id, 
+            // the link and an error.
+            Runtime.dynCall('vii', callback, [requestID, outcome]);
+        },
     },
 
     Mlty_Initialize: function (server, project) {
@@ -33,12 +43,13 @@ var moralityGlobal =
         });
     },
 
-    Mlty_WalletAddress: function () {
-        var returnStr = web3.currentProvider.selectedAddress;
+    Mlty_WalletAddress: function (requestID, callback) {
+        var returnStr = Moralis.User.current().get('ethAddress');
         var bufferSize = lengthBytesUTF8(returnStr) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(returnStr, buffer, bufferSize);
-        return buffer;
+
+        contextObject.NotifyCSharp_GetAddressOutcome(requestID, buffer, callback);
     },
 };
 

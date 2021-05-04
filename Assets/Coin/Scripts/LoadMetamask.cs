@@ -6,14 +6,37 @@ using UnityEngine.UI;
 
 public class LoadMetamask : MonoBehaviour
 {
-    // use WalletAddress function from web3.jslib
-    [DllImport("__Internal")] private static extern string WalletAddress();
-
     [SerializeField] InputField input;
     
     public void InputMetamaskWalletAddress()
     {
-        input.text = WalletAddress();
+        if (!Morality.Instance.isInitialized)
+        {
+            Morality.Instance.Initialize();
+        }
+
+        if (!Morality.Instance.isAuthenticated)
+        {
+            Morality.Instance.Authenticate((outcome) =>
+            {
+                if (outcome != 0)
+                {
+                    CallbackExecution();
+                }
+            });
+        }
+        else
+        {
+            CallbackExecution();
+        }
+    }
+
+    private void CallbackExecution()
+    {
+        Morality.Instance.GetWalletAddress((address) =>
+        {
+            input.text = address;
+        });
     }
 }
 
