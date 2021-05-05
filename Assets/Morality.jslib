@@ -44,6 +44,28 @@ var moralityGlobal =
         console.log('[JS] Returning arrtribute:' + buffer);
         contextObject.NotifyCSharp_GetOutcome(requestID, buffer, callback);
     },
+
+    Mlty_EvalString: function (requestID, callback, javascript) {
+        console.log('[JS] Input instructions: \n' + Pointer_stringify(javascript));
+        var returnVal = eval(Pointer_stringify(javascript));
+        
+        console.log('[JS] Obtained from eval(): ' + returnVal);
+        console.log('[JS] Type: ' + typeof(returnVal));
+
+        var returnStr = returnVal.toString();
+        console.log('[JS] Stringified Type: ' + typeof(returnStr));
+        console.log('[JS] Stringified Value: ' + returnStr);
+
+        var bufferSize = lengthBytesUTF8(returnStr) + 1;
+        console.log('[JS] bufferSize: ' + bufferSize);
+
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(returnStr, buffer, bufferSize);
+
+
+        console.log('[JS] Returning eval buffer:' + buffer);
+        contextObject.NotifyCSharp_GetOutcome(requestID, buffer, callback);
+    },
 };
 
 autoAddDeps(moralityGlobal, '$contextObject'); // tell emscripten about this dependency, using the file name and communicator object name as parameters.

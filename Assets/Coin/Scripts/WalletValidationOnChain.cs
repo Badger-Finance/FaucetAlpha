@@ -25,7 +25,7 @@ public class WalletValidationOnChain : MonoBehaviour
     public IEnumerator ValidateCR(string userWalletAddress)
     {
         // Check if user is past retry-cooldown time. 
-        yield return CheckCooldownCR(userWalletAddress);
+        yield return QueryCooldown();
 
         // Check if user clears cross-chain token holder validation.
         foreach (var endpoint in crossChainContractEndpoints.Keys)
@@ -39,6 +39,42 @@ public class WalletValidationOnChain : MonoBehaviour
         TerminateCoroutineExecution(
             new WalletValidationCoordinator.ValidationOutcome(
                 WalletValidationCoordinator.ValidationOutcome.Code.Success, null));
+    }
+
+    private IEnumerator QueryCooldown()
+    {
+        int isCooldownReady = -1;
+        string javascript = "Moralis.User.current().attributes.last_play.getTime()";
+        Morality.Instance.GetEvalResult((result) =>
+        {
+            Debug.Log($"Incoming from JS: \"{result}\"");
+            
+            // After obtaining the result, we need to check based off threshold
+            var lastPlay_UnixMilliseconds = long.Parse(result);
+            var now_UnixMilliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            const int threshold = 35000;
+
+            Debug.Log("Computed UnixEpoch data.");
+            
+            var difference = now_UnixMilliseconds - lastPlay_UnixMilliseconds;
+            if (difference >= threshold)
+            {
+                isCooldownReady = 1;
+            }
+            else
+            {
+                int timeRemaining = (int)(threshold - difference);
+                isCooldownReady = 0;
+
+                TerminateCoroutineExecution(new WalletValidationCoordinator.ValidationOutcome(
+                    WalletValidationCoordinator.ValidationOutcome.Code.TooSoon,
+                    timeRemaining
+                ));
+            }
+            Debug.Log($"now {now_UnixMilliseconds} - unixLastPlay {lastPlay_UnixMilliseconds} > theshold {threshold} = {isCooldownReady == 1}");
+
+        }, javascript);
+        yield return new WaitUntil(()=> isCooldownReady != -1);
     }
 
     private IEnumerator ContractValidationCallCR(BlockchainNodeUrl networkUrl, ContractAddress contractAddress,

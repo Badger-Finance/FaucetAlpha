@@ -16,6 +16,6 @@ public partial class Morality : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void Mlty_GetUserAttributeString(int requestId, StringCSharpCallback callback, string attribute);
     
-    // [DllImport("__Internal")]
-    // private static extern void Mlty_GetUserAttributeInt32(int requestId, Int32CSharpCallback callback);
+    [DllImport("__Internal")]
+    private static extern void Mlty_EvalString(int requestId, StringCSharpCallback callback, string javascript);
 }

@@ -43,4 +43,9 @@ public partial class Morality : MonoBehaviour
     {
         Mlty_GetUserAttributeString(NewRequest(callback), GlobalCallback, attribute);
     }
+
+    public void GetEvalResult(Action<string> callback, string javascript)
+    {
+        Mlty_EvalString(NewRequest(callback), GlobalCallback, javascript);
+    }
 }
