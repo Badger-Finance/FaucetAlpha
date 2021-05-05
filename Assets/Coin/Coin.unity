@@ -2325,17 +2325,9 @@ MonoBehaviour:
       elementIcon: {fileID: 0}
     reqReferences: {fileID: 0}
     isExpanded: 1
-    _keyValues:
-    - https://ropsten.infura.io/v3/a720bbacf18f4b3d9fbb72ebe705c67e
-    - https://data-seed-prebsc-1-s1.binance.org:8545/
-    _keys:
-    - https://ropsten.infura.io/v3/a720bbacf18f4b3d9fbb72ebe705c67e
-    - https://data-seed-prebsc-1-s1.binance.org:8545/
-    _values:
-    - collection:
-      - 0x9555D7C4C02659b678e0526eB41774e9c2FFdDeE
-    - collection:
-      - 0x0d1E9675988aF6A16bE2Ca7ea77e371756C5C4A8
+    _keyValues: []
+    _keys: []
+    _values: []
   faucet: {fileID: 1863349324}
 --- !u!114 &708477824
 MonoBehaviour:
