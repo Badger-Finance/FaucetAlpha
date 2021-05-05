@@ -3999,8 +3999,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d95ef813bb34012a552c32195b0b3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  server: https://wzsvcprcwot5.moralis.io:2053/server
-  project: TiOBxZ3bskl416o5TiQnK33mxEJMEamFp8qUhp0t
+  server: https://o6aadi5f8aml.moralis.io:2053/server
+  project: GmCC89F9lQVTsepysE6S4rs4JBpPJacqyFYNB31M
   isInitialized: 0
   isAuthenticated: 0
 --- !u!1 &1113164020
@@ -6426,9 +6426,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 885f6774c97f541328f3289eff6942cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  networkUrl: https://data-seed-prebsc-1-s1.binance.org:8545/
-  networkExplorerUrl: https://testnet.bscscan.com/tx/
-  contractAddress: 0xEaf4c92BC9Ef176cD29E5d888915A5e12662ea90
+  networkUrl: https://ropsten.infura.io/v3/e95812f105a340cda6bfd2c67bc22f69
+  networkExplorerUrl: https://ropsten.etherscan.io/
+  contractAddress: 0xE649cfa3c11Cc79734743aDbd29047c8a82214C5
   gasWalletAddress: 0xa4B8198E42268cf870297c77174318F0C6A43913
   gasWalletAddressPrivate: cdd4df549e0dda6ab7511c55cfa74f105791f1fd44fb6755a4a4349f034061c9
   grantTransactionHash: 

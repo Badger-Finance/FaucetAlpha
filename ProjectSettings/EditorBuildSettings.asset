@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Coin/Coin.unity
     guid: 1db4134b0f8434a7c9c03f283a750612
   - enabled: 0
-    path: Assets/Morality.unity
+    path: Assets/MoralityCS/Morality.unity
     guid: 6b5b6089ecc104835bb59c5f796bd241
   m_configObjects: {}
