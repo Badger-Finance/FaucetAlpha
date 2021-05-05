@@ -3,23 +3,14 @@ var moralityGlobal =
     // a communicator object inside the global object, the dollar sign must be before the name.
     $contextObject:
     {
-         // Notifies C# that the login was successful.
-         NotifyCSharp_LoginOutcome : function(requestID, outcome, callback)
-         {
-             // Calls a C# function using its pointer 'callback',
-             // 'v' means it is a void function, the count of 'i's if the count of 
-             // arguments this function accepts in our case 3 arguments, request id, 
-             // the link and an error.
-             Runtime.dynCall('vii', callback, [requestID, outcome]);
-         },
-
         // Notifies C# that the login was successful.
-        NotifyCSharp_GetAddressOutcome : function(requestID, outcome, callback)
+        NotifyCSharp_GetOutcome : function(requestID, outcome, callback)
         {
             // Calls a C# function using its pointer 'callback',
             // 'v' means it is a void function, the count of 'i's if the count of 
             // arguments this function accepts in our case 3 arguments, request id, 
             // the link and an error.
+            console.log("[JS] Request #" + requestID + " Outcome:" + outcome);
             Runtime.dynCall('vii', callback, [requestID, outcome]);
         },
     },
@@ -28,28 +19,30 @@ var moralityGlobal =
         // connect to Moralis server
         Moralis.initialize(Pointer_stringify(project));
         Moralis.serverURL = Pointer_stringify(server);
-        console.log('Morality Initialized');
+        console.log('[JS] Morality Initialized');
     },
 
     Mlty_Authenticate: function (requestID, callback) {
         Moralis.Web3.authenticate().then(function (user) {
-            console.log("logged in user:", user);
-            console.log("ETH Address:", user.get('ethAddress'));
-            contextObject.NotifyCSharp_LoginOutcome(requestID, 1, callback);
+            console.log("[JS] logged in user:", user.get('ethAddress'));
+            contextObject.NotifyCSharp_GetOutcome(requestID, 1, callback);
         }).catch(function(error)
         {
             console.log(error);
-            contextObject.NotifyCSharp_LoginOutcome(requestID, 0, callback);
+            contextObject.NotifyCSharp_GetOutcome(requestID, 0, callback);
         });
     },
 
-    Mlty_WalletAddress: function (requestID, callback) {
-        var returnStr = Moralis.User.current().get('ethAddress');
+    Mlty_GetUserAttributeString: function (requestID, callback, attribute) {
+        console.log('[JS] Input attribute: ' + Pointer_stringify(attribute));
+        var returnStr = Moralis.User.current().get(Pointer_stringify(attribute));
+        console.log('[JS] Obtained from Moralis: ' + returnStr);
         var bufferSize = lengthBytesUTF8(returnStr) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(returnStr, buffer, bufferSize);
 
-        contextObject.NotifyCSharp_GetAddressOutcome(requestID, buffer, callback);
+        console.log('[JS] Returning arrtribute:' + buffer);
+        contextObject.NotifyCSharp_GetOutcome(requestID, buffer, callback);
     },
 };
 

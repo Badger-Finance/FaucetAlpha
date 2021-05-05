@@ -19,6 +19,7 @@ public class LoadMetamask : MonoBehaviour
         {
             Morality.Instance.Authenticate((outcome) =>
             {
+                Debug.Log("Authentication Result: " + outcome);
                 if (outcome != 0)
                 {
                     CallbackExecution();
@@ -33,10 +34,10 @@ public class LoadMetamask : MonoBehaviour
 
     private void CallbackExecution()
     {
-        Morality.Instance.GetWalletAddress((address) =>
+        Morality.Instance.GetUserArrtibute((address) =>
         {
             input.text = address;
-        });
+        },"ethAddress");
     }
 }
 
