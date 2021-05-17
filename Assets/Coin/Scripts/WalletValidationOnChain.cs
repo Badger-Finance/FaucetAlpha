@@ -43,6 +43,15 @@ public class WalletValidationOnChain : MonoBehaviour
 
     private IEnumerator QueryCooldown()
     {
+        int thresholdSeconds = -1;
+        Morality.Instance.GetConfig((result) =>
+        {
+            thresholdSeconds = Int32.Parse(result);
+        }, "CooldownRateSeconds");
+        yield return new WaitUntil(()=> thresholdSeconds != -1);
+
+        
+        
         int isCooldownReady = -1;
         string javascript = "Moralis.User.current().attributes.last_play.getTime()";
         Morality.Instance.GetEvalResult((result) =>
@@ -50,29 +59,30 @@ public class WalletValidationOnChain : MonoBehaviour
             Debug.Log($"Incoming from JS: \"{result}\"");
             
             // After obtaining the result, we need to check based off threshold
-            var lastPlay_UnixMilliseconds = long.Parse(result);
-            var now_UnixMilliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            const int threshold = 35000;
+            long lastPlay_UnixMilliseconds = long.Parse(result);
+            long now_UnixMilliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            
+            long difference = now_UnixMilliseconds - lastPlay_UnixMilliseconds;
 
             Debug.Log("Computed UnixEpoch data.");
-            
-            var difference = now_UnixMilliseconds - lastPlay_UnixMilliseconds;
-            if (difference >= threshold)
+            Debug.Log($"now {now_UnixMilliseconds} - unixLastPlay {lastPlay_UnixMilliseconds} ({difference})> theshold {thresholdSeconds}");
+
+            if (difference >= thresholdSeconds)
             {
+                Debug.Log("Cooldown ready...");
                 isCooldownReady = 1;
             }
             else
             {
-                int timeRemaining = (int)(threshold - difference);
-                isCooldownReady = 0;
+                long differenceSeconds = difference / 1000L;
+                long secondsRemaining = thresholdSeconds - differenceSeconds;
+                Debug.Log($"Cooldown not ready. {secondsRemaining} seconds remain.");
 
                 TerminateCoroutineExecution(new WalletValidationCoordinator.ValidationOutcome(
                     WalletValidationCoordinator.ValidationOutcome.Code.TooSoon,
-                    timeRemaining
+                    (int)secondsRemaining
                 ));
             }
-            Debug.Log($"now {now_UnixMilliseconds} - unixLastPlay {lastPlay_UnixMilliseconds} > theshold {threshold} = {isCooldownReady == 1}");
-
         }, javascript);
         yield return new WaitUntil(()=> isCooldownReady != -1);
     }

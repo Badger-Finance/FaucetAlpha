@@ -45,6 +45,25 @@ var moralityGlobal =
         contextObject.NotifyCSharp_GetOutcome(requestID, buffer, callback);
     },
 
+    Mlty_GetConfigString: function (requestID, callback, config) {
+
+        var stringified = Pointer_stringify(config);
+
+        Moralis.Config.get({useMasterKey: false}).then(function(cfgObj) {
+
+            var cfgValue = cfgObj.get(stringified);
+            console.log('[JS] Obtained from Moralis: ' + cfgValue);
+
+            var cfgString = cfgValue.toString();
+            var bufferSize = lengthBytesUTF8(cfgString) + 1;
+            var buffer = _malloc(bufferSize);
+            stringToUTF8(cfgString, buffer, bufferSize);
+
+            console.log('[JS] Returning arrtribute:' + buffer);
+            contextObject.NotifyCSharp_GetOutcome(requestID, buffer, callback);
+        });
+    },
+
     Mlty_EvalString: function (requestID, callback, javascript) {
         console.log('[JS] Input instructions: \n' + Pointer_stringify(javascript));
         var returnVal = eval(Pointer_stringify(javascript));
