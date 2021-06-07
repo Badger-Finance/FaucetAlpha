@@ -101,7 +101,7 @@ public class Faucet : MonoBehaviour
 
     public IEnumerator RequestGrantCR(byte score, byte fromTotal)
     {
-        var transactionTransferRequest = new TransactionSignedUnityRequest(networkUrl, gasWalletAddressPrivate);
+        var transactionTransferRequest = new TransactionSignedUnityRequest(networkUrl, gasWalletAddressPrivate, 80001);
         var transactionMessage = new GrantFunction
         {
             FromAddress = gasWalletAddress,
