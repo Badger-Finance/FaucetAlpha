@@ -45,6 +45,7 @@ contract Faucet is Ownable
     
     function calculatePayout(uint8 score, uint8 fromTotal) public view returns (uint256)
     {
+        require(fromTotal > 0);
         require(score <= fromTotal);
         return (score * maxDistributionPerGrant) / fromTotal;
     }
