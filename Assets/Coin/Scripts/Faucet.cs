@@ -14,6 +14,7 @@ public class Faucet : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void OpenNewTab(string url);
 
+    [SerializeField] uint chainId;
     [SerializeField] string networkUrl;
     [SerializeField] string networkExplorerUrl;
 
@@ -101,7 +102,7 @@ public class Faucet : MonoBehaviour
 
     public IEnumerator RequestGrantCR(byte score, byte fromTotal)
     {
-        var transactionTransferRequest = new TransactionSignedUnityRequest(networkUrl, gasWalletAddressPrivate, 80001);
+        var transactionTransferRequest = new TransactionSignedUnityRequest(networkUrl, gasWalletAddressPrivate, chainId);
         var transactionMessage = new GrantFunction
         {
             FromAddress = gasWalletAddress,
