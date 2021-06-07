@@ -10,7 +10,7 @@ contract Faucet is Ownable
 {
     address[] public validators;
     uint32 public participantRetryTime;
-    uint256 immutable public maxDistributionPerGrant;
+    uint256 public maxDistributionPerGrant;
 
     mapping (address => uint256) private participants;
     
@@ -31,6 +31,11 @@ contract Faucet is Ownable
     function changeParticipantRetryTime(uint32 newTime) public onlyOwner
     {
         participantRetryTime = newTime;
+    }
+
+    function changeMaxDistributionPerGrant(uint256 newDistribution) public onlyOwner
+    {
+        maxDistributionPerGrant = newDistribution;
     }
     
     function configureValidators(address[] memory inputValidators) public onlyOwner
