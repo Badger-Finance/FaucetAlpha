@@ -9,7 +9,7 @@ import "../interfaces/WalletValidator.sol";
 contract Faucet is Ownable
 {
     address[] public validators;
-    uint256 immutable public participantRetryTime;
+    uint32 public participantRetryTime;
     uint256 immutable public maxDistributionPerGrant;
 
     mapping (address => uint256) private participants;
@@ -21,11 +21,16 @@ contract Faucet is Ownable
         // Allow contract to receive award funds.
     }
     
-    constructor(uint256 participantRetryTimeIn, uint256 maxDistributionPerGrantIn, address[] memory inputValidators) payable
+    constructor(uint32 participantRetryTimeIn, uint256 maxDistributionPerGrantIn, address[] memory inputValidators) payable
     {
         participantRetryTime = participantRetryTimeIn;
         maxDistributionPerGrant = maxDistributionPerGrantIn;
         configureValidators(inputValidators);
+    }
+    
+    function changeParticipantRetryTime(uint32 newTime) public onlyOwner
+    {
+        participantRetryTime = newTime;
     }
     
     function configureValidators(address[] memory inputValidators) public onlyOwner
